@@ -11,7 +11,10 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "build:premium": "vite build --config vite.static.config.ts",
+    "dev:premium": "vite --config vite.static.config.ts",
+    "preview:premium": "vite preview --config vite.static.config.ts"
   },
   "overrides": {
     "rolldown": "1.2.1"

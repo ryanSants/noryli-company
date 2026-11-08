@@ -20,7 +20,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
   component: Admin,
 });
 
-function Admin() {
+export function Admin() {
   const qc = useQueryClient();
   const [q, setQ] = useState("");
   const [stage, setStage] = useState<StageId | "todos">("todos");

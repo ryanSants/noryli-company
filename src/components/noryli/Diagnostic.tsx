@@ -58,6 +58,7 @@ export function Diagnostic() {
     setStatus("sending");
     requestId.current ??= crypto.randomUUID();
     const v = parsed.data;
+    try {
     const { error } = await supabase.from("leads").insert({
       request_id: requestId.current,
       name: v.name,
@@ -73,6 +74,7 @@ export function Diagnostic() {
     // 23505 = mesmo pedido já salvo (toque repetido): já está no banco
     if (!error || error.code === "23505") setStatus("done");
     else setStatus("error");
+    } catch { setStatus("error"); } finally { sending.current = false; }
   }
 
   const wa = site.contacts.whatsapp

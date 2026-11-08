@@ -27,7 +27,7 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-function Index() {
+export function Index() {
   useEffect(() => {
     store.set({ isPreview: isPreviewHost(location.hostname) });
     document.documentElement.classList.add("js-reveal");

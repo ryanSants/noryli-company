@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
+
 import { Logo } from "@/components/noryli/Logo";
 
 export const Route = createFileRoute("/auth")({
@@ -19,7 +19,7 @@ export const Route = createFileRoute("/auth")({
   component: AuthPage,
 });
 
-function AuthPage() {
+export function AuthPage() {
   const nav = useNavigate();
   const [mode, setMode] = useState<"in" | "up">("in");
   const [email, setEmail] = useState("");
@@ -30,6 +30,7 @@ function AuthPage() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true); setMsg(null);
+    try {
     if (mode === "in") {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) setMsg("E-mail ou senha incorretos.");
@@ -38,14 +39,17 @@ function AuthPage() {
       const { error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: `${window.location.origin}/admin` } });
       setMsg(error ? error.message : "Conta criada. Confirme pelo link enviado ao seu e-mail.");
     }
-    setBusy(false);
+    } catch { setMsg("Não foi possível conectar. Tente novamente mais tarde."); }
+    finally { setBusy(false); }
   }
 
   async function google() {
-    const r = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + "/auth" });
-    if (r.error) { setMsg("Não foi possível entrar com Google."); return; }
-    if (r.redirected) return;
-    nav({ to: "/admin" });
+    try {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google", options: { redirectTo: window.location.origin + "/admin" },
+    });
+    if (error) setMsg("Não foi possível entrar com Google.");
+    } catch { setMsg("Não foi possível entrar com Google."); }
   }
 
   return (
